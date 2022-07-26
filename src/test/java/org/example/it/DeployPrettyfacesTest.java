@@ -23,9 +23,9 @@ import java.util.logging.Logger;
 import static io.restassured.RestAssured.given;
 
 @ExtendWith(ArquillianExtension.class)
-public class DeploySimplePrimefacesTest {
+public class DeployPrettyfacesTest {
     
-    private final static Logger logger = Logger.getLogger(DeploySimplePrimefacesTest.class.getName());
+    private final static Logger logger = Logger.getLogger(DeployPrettyfacesTest.class.getName());
     
     @Deployment
     public static WebArchive createDeployment() throws Exception {
@@ -33,25 +33,34 @@ public class DeploySimplePrimefacesTest {
         
         WebArchive war = ShrinkWrap.create(WebArchive.class);
     
-        Path helloXhtml = Path.of("src/main/webapp/hello-pf.xhtml");
+        Path helloXhtml = Path.of("src/main/webapp/hello.xhtml");
         war.addAsWebResource(helloXhtml.toFile());
         
         Files.list(Path.of("src/main/webapp/WEB-INF")).forEach(
             path -> war.addAsWebInfResource(path.toFile())
         );
     
-        // Import Primefaces from Maven
+        // Import Prettyfaces Servlet
         // Taken from https://cassiomolin.com/2015/06/07/adding-maven-dependencies-to-arquillian-test/
         File[] files = Maven.resolver()
             .loadPomFromFile("pom.xml")
             .importDependencies(ScopeType.COMPILE)
-            .resolve("org.primefaces:primefaces:jar:jakarta:11.0.0")
+            .resolve("org.ocpsoft.rewrite:rewrite-servlet")
             .withTransitivity()
             .asFile();
+        war.addAsLibraries(files);
     
         Arrays.stream(files).forEach(f -> System.out.println(f.getAbsolutePath()));
-        
+    
+        // Import Prettyfaces Config
+        files = Maven.resolver()
+            .loadPomFromFile("pom.xml")
+            .resolve("org.ocpsoft.rewrite:rewrite-config-prettyfaces")
+            .withTransitivity()
+            .asFile();
         war.addAsLibraries(files);
+    
+        Arrays.stream(files).forEach(f -> System.out.println(f.getAbsolutePath()));
         
         return war;
     }
@@ -62,9 +71,9 @@ public class DeploySimplePrimefacesTest {
     @Test
     @RunAsClient
     void accessHelloXhtml() {
-        logger.info("Hello Primefaces");
+        logger.info("Hello JSF");
         RestAssured.baseURI = deploymentUrl.toString();
-        given().when().get("/hello-pf.xhtml").then().assertThat().statusCode(HttpServletResponse.SC_OK);
+        given().when().get("/hello.xhtml").then().assertThat().statusCode(HttpServletResponse.SC_OK);
     }
 
 }

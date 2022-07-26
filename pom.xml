@@ -50,6 +50,10 @@
         <!-- Payara server -->
         <payara.version>6.2022.1.Alpha3</payara.version>
         <arquillian-payara.version>3.0.alpha6</arquillian-payara.version>
+        
+        <!-- JSF deps -->
+        <primefaces.version>11.0.0</primefaces.version>
+        <prettyfaces.version>5.0.0.Alpha1</prettyfaces.version>
 
         <!-- By default, skip tests -->
         <skipTests>true</skipTests>
@@ -200,12 +204,30 @@
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>jakarta.faces</groupId>
+            <artifactId>jakarta.faces-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>11.0.0</version>
+            <version>${primefaces.version}</version>
             <classifier>jakarta</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ocpsoft.rewrite</groupId>
+            <artifactId>rewrite-servlet</artifactId>
+            <version>${prettyfaces.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ocpsoft.rewrite</groupId>
+            <artifactId>rewrite-config-prettyfaces</artifactId>
+            <version>${prettyfaces.version}</version>
+            <scope>runtime</scope>
         </dependency>
         
         <dependency>
